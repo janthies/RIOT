@@ -1,0 +1,6 @@
+# The bootloader measures riot-tee and hands over to it, so it is only useful
+# together with riot-tee.
+USEPKG += riot-tee
+
+# riot-tee-bl compiles the cc3xx driver from the tf-m sources.
+USEPKG += tf-m

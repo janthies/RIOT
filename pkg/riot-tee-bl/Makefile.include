@@ -1,0 +1,28 @@
+# riot-tee-bl owns the first BL_FLASH_SIZE bytes of flash and places riot-tee
+# directly behind itself. The bootloader also needs to know how much flash
+# riot-tee has; TEE_FLASH_SIZE comes from pkg/riot-tee. The packages are built
+# in their own make processes, so the values are exported.
+BL_FLASH_SIZE := 0x8000
+TEE_FLASH_START := $(BL_FLASH_SIZE)
+export BL_FLASH_SIZE TEE_FLASH_START TEE_FLASH_SIZE
+
+RIOT_TEE_BL_ELF = $(BINDIR)/pkg-build/riot-tee-bl/riot-tee-bl.elf
+RIOT_TEE_BL_EXTENDED_BIN = $(BINDIR)/riot-tee-bl.extended.bin
+RIOT_TEE_BL_COMBINED_BIN = $(BINDIR)/$(APPLICATION).bl.combined.bin
+
+# riot-tee-bl.elf comes out of the package build, which is done before the
+# application is linked.
+$(RIOT_TEE_BL_EXTENDED_BIN): $$(ELFFILE)
+	$(Q)$(OBJCOPY) -O binary $(RIOT_TEE_BL_ELF) $@.tmp
+	$(Q)truncate -s $$(($(BL_FLASH_SIZE))) $@.tmp
+	$(Q)mv $@.tmp $@
+
+# The bootloader, padded with zeros up to the start of riot-tee, in front of
+# the combined image of pkg/riot-tee.
+$(RIOT_TEE_BL_COMBINED_BIN): $(RIOT_TEE_BL_EXTENDED_BIN) $$(RIOT_TEE_COMBINED_BIN)
+	$(Q)cat $^ > $@
+
+# pkg/riot-tee also sets FLASHFILE, and its Makefile.include is read after this
+# one ("riot-tee-bl/" sorts before "riot-tee/"). override keeps the image with
+# the bootloader as the file that `make flash` writes.
+override FLASHFILE = $(RIOT_TEE_BL_COMBINED_BIN)
