@@ -1,8 +1,11 @@
 ARCHIVES += $(BINDIR)/pkg-build/riot-tee/api/libriot_tee_api.a
 
-# riot-tee owns the beginning of flash and RAM; the application is linked behind it
+# riot-tee owns its part of flash and the beginning of RAM; the application is
+# linked behind it. TEE_FLASH_START can be set by a package whose
+# Makefile.include is read after this one, so the shell adds start and size
+# only when the linker runs, as in makefiles/mcuboot.mk.
 include $(RIOTPKG)/riot-tee/riot-tee-layout.mk
-ROM_OFFSET = $(TEE_FLASH_SIZE)
+ROM_OFFSET = $$(($(TEE_FLASH_START) + $(TEE_FLASH_SIZE)))
 RAM_OFFSET = $(TEE_RAM_SIZE)
 
 # The secure image and the application are flashed as one file, so that
