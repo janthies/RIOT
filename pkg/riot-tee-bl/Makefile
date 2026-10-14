@@ -1,6 +1,6 @@
 PKG_NAME=riot-tee-bl
 PKG_URL=https://github.com/janthies/riot-tee-bl.git
-PKG_VERSION=80f4a8972f0cebaea1466436fab6a7d554d522f7
+PKG_VERSION=fa2e10fb29fabfab0c01248b5f7760bc8335f3ba
 PKG_LICENSE=LGPL-2.1-only
 
 include $(RIOTBASE)/pkg/pkg.mk
