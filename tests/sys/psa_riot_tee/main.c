@@ -15,10 +15,14 @@
  * @}
  */
 
+#include "periph_cpu.h"
 #include "test_utils.h"
 
 int main(void)
 {
+    /* Boot-time evaluation: the phase pin of BL1 (P0.10), which riot-tee
+       keeps toggling, toggles once more when RIOT reaches main(). */
+    NRF_P0->OUT ^= 1 << 10;
     TESTS_START();
     psa_crypto_init();
     TESTS_RUN(tests_psa_import_and_seal_key());
